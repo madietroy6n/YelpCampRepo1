@@ -25,40 +25,34 @@ var campgroundSchema = new mongoose.Schema({
 
 var Campground = mongoose.model("Campground", campgroundSchema);
 
-Campground.create(
-	{
-		name:"Clear Lake", 
-	 	image:"https://images.pexels.com/photos/699558/pexels-photo-699558.jpeg?auto=compress&cs=tinysrgb&h=350"
-		}, function(err, campground){
-			if(err){
-				console.log(err);
-			} else {
-				console.log("Newly Created Campground: ");
-				console.log(campground);
-			}
-		});
+// Campground.create(
+// 	{	
+// 		name:"Little Stoney",
+// 		image:"https://images.pexels.com/photos/1230302/pexels-photo-1230302.jpeg?auto=compress&cs=tinysrgb&h=350",
+// 		}, function(err, campground){
+// 			if(err){
+// 				console.log(err);
+// 			} else {
+// 				console.log("Newly Created Campground: ");
+// 				console.log(campground);
+// 			}
+// 		});
 
-var campgrounds = [
-		{name:"Clear Lake", image:"https://images.pexels.com/photos/699558/pexels-photo-699558.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Little Stoney",image:"https://images.pexels.com/photos/1230302/pexels-photo-1230302.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Bear Mountain", image:"https://images.pexels.com/photos/1840421/pexels-photo-1840421.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Billy Goat Hill", image:"https://images.pexels.com/photos/2419278/pexels-photo-2419278.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Clear Lake", image:"https://images.pexels.com/photos/699558/pexels-photo-699558.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Little Stoney",image:"https://images.pexels.com/photos/1230302/pexels-photo-1230302.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Bear Mountain", image:"https://images.pexels.com/photos/1840421/pexels-photo-1840421.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Billy Goat Hill", image:"https://images.pexels.com/photos/2419278/pexels-photo-2419278.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Clear Lake", image:"https://images.pexels.com/photos/699558/pexels-photo-699558.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Little Stoney",image:"https://images.pexels.com/photos/1230302/pexels-photo-1230302.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Bear Mountain", image:"https://images.pexels.com/photos/1840421/pexels-photo-1840421.jpeg?auto=compress&cs=tinysrgb&h=350"},
-		{name:"Billy Goat Hill", image:"https://images.pexels.com/photos/2419278/pexels-photo-2419278.jpeg?auto=compress&cs=tinysrgb&h=350"}
-	 ];
 
 app.get("/", function(req, res){
 	res.render("landing");
 });
 
 app.get("/campgrounds", function(req, res){
-	 res.render("campgrounds",{campgrounds:campgrounds});
+// 	 Get all campgrounds from the db
+	Campground.find({}, function(err, allCampgrounds){
+		if(err){
+			console.log(err);
+		} else {
+			res.render("campgrounds",{campgrounds:allCampgrounds});
+		}
+	});
+	
 });
 
 app.post("/campgrounds", function(req,res){
@@ -67,14 +61,20 @@ app.post("/campgrounds", function(req,res){
 	var name = req.body.name;
 	var image = req.body.image;
 	var newCampGround = {name: name, image: image}
-	campgrounds.push(newCampGround);
-// 	redirect back to campgrounds page
-	res.redirect("/campgrounds");
-})
+// 	Create a new campground and save to the database
+	Campground.create(newCampGround, function(err, newlyCreated){
+		if(err){
+			console.log(err);
+		} else {
+// 			redirect back to campgrounds page
+			res.redirect("/campgrounds");
+		}
+	});
+});
 
 app.get("/campgrounds/new", function(req, res){
 	res.render("new.ejs")
-})
+});
 
 app.listen(process.env.PORT || 8080, function() {
   console.log("YelpCamp Server Running");
